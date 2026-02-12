@@ -1,0 +1,8 @@
+- name: Deploy to staging
+  hosts: staging
+  gather_facts: false
+
+  tasks:
+  - name: Simulated staging deploy
+    debug:
+      msg: "Deploy to STAGING successful"

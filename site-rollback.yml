@@ -1,0 +1,31 @@
+- name: Rollback production
+  hosts: prod
+  gather_facts: false
+  become: true
+
+  tasks:
+    - name: Check backup exists
+      stat:
+        path: /etc/demo-backend/config.env.bak
+      register: backup
+
+    - name: Fail if no backup found
+      fail:
+        msg: "No backup found, rollback impossible"
+      when: not backup.stat.exists
+
+    - name: Restore config from backup
+      copy:
+        src: /etc/demo-backend/config.evn.bak
+        dest: /etc/demo-backend/config.env
+        remote_src: true
+
+    - name: Restart backend after rollback
+      service:
+        name: demo-backend
+        state: restarted
+      ignore_errors: true
+
+    - name: Verify rollback completed
+      debug:
+        msg: "Rollback executed successfully"

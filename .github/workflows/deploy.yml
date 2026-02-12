@@ -1,0 +1,70 @@
+# deploy with ansible
+
+name: Deploy with Ansible
+
+on:
+  push:
+    branches:
+      - main
+
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Install Ansible
+        run: |
+          sudo apt update
+          sudo apt install -y ansible
+
+      - name: Ansible syntax check
+        run: |
+          ansible-playbook site.yml --syntax-check
+
+      - name: Ansible dry-run (check mode)
+        run: |
+          ansible-playbook \
+            -i inventory/ci.ini \
+            site.yml \
+            --check
+
+      - name: Deploy to staging
+        run: |
+          ansible-playbook \
+            -i inventory/staging.ini \
+            site-staging.yml
+
+  deploy-prod:
+    runs-on: ubuntu-latest
+    needs: ci
+    environment: production
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Install Ansible
+        run: |
+          sudo apt update
+          sudo apt install -y ansible
+
+      - name: Deploy to production
+        run: |
+          ansible-playbook \
+            -i inventory/prod.ini \
+            site-prod.yml
+
+      - name: Health check
+        run: |
+          exit 1
+
+      - name: Rollback on failure
+        if: failure()
+        run: |
+          ansible-playbook \
+            -i inventory/prod.ini \
+            site-rollback.yml

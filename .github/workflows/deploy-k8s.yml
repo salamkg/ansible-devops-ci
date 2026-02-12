@@ -1,0 +1,33 @@
+name: Deploy to Kubernetes
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Install kubectl
+        run: |
+          sudo apt update
+          sudo apt install -y kubectl
+
+      - name: Deploy to cluster
+        run: |
+          kubectl apply -f k8s/
+
+
+      - name: Wait for rollout
+        run: |
+          kubectl rollout status deployment/demo-app --timeout=60s
+
+      - name: Rollback on failure
+        if: failure()
+        run: |
+          kubectl rollout undo deployment/demo-app

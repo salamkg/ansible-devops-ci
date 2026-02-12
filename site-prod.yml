@@ -1,0 +1,16 @@
+- name: Deploy to production
+  hosts: prod
+  gather_facts: false
+
+  tasks:
+    - name: Backup current config if exists
+      copy:
+        src: /etc/demo-backend/config.env
+        dest: /etc/demo-backend/config.env.bak
+        remote_src: true
+      ignore_errors: true
+      tags: backup
+
+    - name: Simulated production deploy
+      debug:
+        msg: "Deploy to PRODUCTION successful"

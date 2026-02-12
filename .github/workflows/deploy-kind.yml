@@ -1,0 +1,30 @@
+name: Deploy to local kind
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build image
+        run: docker build -t demo-app:${{ github.sha }} .
+
+      - name: Load image into kind
+        run: kind load docker-image demo-app:${{ github.sha }} --name devops
+
+      - name: Update deployment image
+        run: |
+          kubectl set image deployment/demo-app demo=demo-app:${{ github.sha }}
+
+      - name: Wait for rollout
+        run: kubectl rollout status deployment/demo-app --timeout=60s
+
+      - name: Rollback on failure
+        if: failure()
+        run: kubectl rollout undo deployment/demo-app
