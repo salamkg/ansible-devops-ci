@@ -7,7 +7,9 @@ on:
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
+    env:
+      KUBECONFIG: $HOME/.kube/config
 
     steps:
       - name: Checkout
@@ -36,8 +38,11 @@ jobs:
 
       - name: Setup kubeconfig
         run: |
-          echo "${{ secrets.KUBECONFIG }}" > kubeconfig
-          export KUBECONFIG=$PWD/kubeconfig
+          mkdir -p $HOME/.kube
+          echo "{{ secrets.KUBECONFIG }}" > $HOME/.kube/config
+
+      - name: Check cluster
+        run: kubectl get nodes
 
       - name: Helm upgrade
         run: |
