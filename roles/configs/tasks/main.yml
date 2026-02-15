@@ -1,0 +1,9 @@
+- name: Create devops configs directory
+  file:
+    path: "{{ devops_config_dir }}"
+    state: directory
+
+- name: Render env config from template
+  template:
+    src: env.j2
+    dest: "{{ devops_config_dir }}/env"

@@ -1,0 +1,17 @@
+- name: Install git on Linux
+  become: true
+  apt:
+    name: git
+    state: present
+    update_cache: true
+  when: ansible_facts['os_family'] == 'Debian'
+
+- name: Install git on macOS
+  community.general.homebrew:
+    name: git
+    state: present
+  when: ansible_facts['system'] == 'Darwin'
+
+- name: Git setup done
+  debug:
+    msg: "Git role completed"

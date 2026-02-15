@@ -1,0 +1,20 @@
+- name: Docker notice for macOS
+  debug:
+    msg: "Install Docker Desktop manually on macOS"
+  when: ansible_facts['system'] == 'Darwin'
+
+- name: Install docker on Linux
+  become: true
+  apt:
+    name: docker.io
+    state: present
+    update_cache: true
+  when: ansible_facts['os_family'] == 'Debian'
+
+- name: Ensure docker service running
+  become: true
+  service:
+    name: docker
+    state: started
+    enabled: true
+  when: ansible_facts['os_family'] == 'Debian'

@@ -1,0 +1,11 @@
+- name: Check SSH on macOS
+  command: systemsetup -getremotelogin
+  register: ssh_status
+  changed_when: false
+  failed_when: false
+  when: ansible_facts['system'] == 'Darwin'
+
+- name: Show SSH status (macOS)
+  debug:
+    msg: "{{ ssh_status.stdout | default('SSH status check requires admin rights') }}"
+  when: ansible_facts['system'] == 'Darwin'

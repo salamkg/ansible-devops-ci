@@ -1,0 +1,9 @@
+- name: Devops workstation setup
+  hosts: local
+  gather_facts: true
+  
+  roles:
+   - role: configs
+     vars:
+       devops_env: prod
+       enable_docker: false

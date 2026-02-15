@@ -1,0 +1,10 @@
+devops_env: local
+
+devops_config_dir: "{{ ansible_facts['env']['HOME'] }}/.devops"
+
+devops_tools:
+   - git
+   - docker
+   - ssh
+
+enable_docker: true
