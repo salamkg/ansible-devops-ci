@@ -42,8 +42,11 @@ jobs:
           echo "${{ secrets.KUBECONFIG }}" | base64 -d > $HOME/.kube/config
           chmod 600 $HOME/.kube/config
 
-      - name: Debug secret length
-        run: echo "${{ secrets.KUBECONFIG }}" | wc -c
+      - name: Debug kubeconfig path
+        run: |
+          echo "KUBECONFIG=$KUBECONFIG"
+          ls -la $HOME/.kube
+          head -5 $HOME/.kube/config
 
       - name: Check cluster
         run: kubectl get nodes
