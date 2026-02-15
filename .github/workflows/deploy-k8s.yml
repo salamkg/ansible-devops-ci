@@ -39,7 +39,7 @@ jobs:
       - name: Setup kubeconfig
         run: |
           mkdir -p $HOME/.kube
-          echo "{{ secrets.KUBECONFIG }}" > $HOME/.kube/config
+          echo "{{ secrets.KUBECONFIG }}" | base64 --decode > $HOME/.kube/config
 
       - name: Check cluster
         run: kubectl get nodes
